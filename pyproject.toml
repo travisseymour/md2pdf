@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md2pdf"
+version = "2025.1.24.4"
+description = "Tool for converting Markdown files to PDF files."
+authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT License"}
+keywords = ["markdown", "pdf", "converter", "tool"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Topic :: Utilities",
+    "Topic :: Education"
+]
+dependencies = [
+    "typer",
+    "markdown",
+    "pdfkit",
+    "pygments"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "ruff",
+    "build",
+    "check-manifest"
+]
+
+[project.scripts]
+md2pdf = "md2pdf.__main__:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[project.urls]
+"homepage" = "https://github.com/travisseymour/md2pdf"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+lint.ignore = ["F821", "F841", "E722"]  # undefined name, assigned but unused variable, bare except
