@@ -77,6 +77,8 @@ def convert(
         help="Pygments theme for syntax highlighting. Options are "
         "['default', 'monokai', 'manni', 'vim', 'friendly', 'native', 'github']",
     ),
+    margin: Optional[float] = typer.Option(None, "--margin", help="Page margins in inches (e.g. 0.75)"),
+    font_scale: Optional[int] = typer.Option(None, "--font-scale", help="Font size as a percentage of the default (e.g. 120 for 20%% larger)"),
 ):
     """
     Convert a Markdown file to a PDF with syntax-highlighted code blocks.
@@ -93,7 +95,8 @@ def convert(
 
     # Build CSS: syntax highlighting theme + table styling
     highlight_css = HtmlFormatter(style=theme).get_style_defs(".codehilite")
-    css = f"{highlight_css}\n{TABLE_CSS}"
+    font_css = f"body {{ font-size: {font_scale}%; }}\n" if font_scale is not None else ""
+    css = f"{highlight_css}\n{TABLE_CSS}\n{font_css}"
 
     # Wrap in a proper HTML document with UTF-8 charset
     html_doc = HTML_TEMPLATE.format(css=css, body=html_content)
@@ -106,7 +109,14 @@ def convert(
         typer.echo(f"Intermediate HTML saved to: {html_file}")
 
     # Convert HTML to PDF
-    pdfkit.from_string(html_doc, str(output_pdf))
+    options = {}
+    if margin is not None:
+        margin_str = f"{margin}in"
+        options["margin-top"] = margin_str
+        options["margin-bottom"] = margin_str
+        options["margin-left"] = margin_str
+        options["margin-right"] = margin_str
+    pdfkit.from_string(html_doc, str(output_pdf), options=options or None)
     typer.echo(f"PDF generated: {output_pdf}")
 
 
