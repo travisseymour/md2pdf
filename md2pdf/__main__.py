@@ -70,16 +70,28 @@ tr:nth-child(even) {
 WATERMARK_CSS = """
 .watermark {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+.watermark span {
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
+    margin-top: -50px;
+    margin-left: -300px;
+    width: 600px;
+    text-align: center;
     font-size: 100px;
     color: rgba(200, 200, 200, 0.3);
     white-space: nowrap;
-    pointer-events: none;
-    z-index: 9999;
     user-select: none;
     letter-spacing: 0.05em;
+    transform: rotate(-45deg);
 }
 """
 
@@ -116,7 +128,7 @@ def convert(
     css = f"{highlight_css}\n{TABLE_CSS}\n{font_css}\n{watermark_css}"
 
     # Build watermark HTML overlay
-    watermark_html = f'<div class="watermark">{html.escape(watermark)}</div>' if watermark else ""
+    watermark_html = f'<div class="watermark"><span>{html.escape(watermark)}</span></div>' if watermark else ""
 
     # Wrap in a proper HTML document with UTF-8 charset
     html_doc = HTML_TEMPLATE.format(css=css, body=html_content + watermark_html)
