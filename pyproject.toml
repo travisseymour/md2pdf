@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "md2pdf"
-version = "2026.10.22.1"
+version = "2026.10.22.2"
 description = "Tool for converting Markdown files to PDF files."
 authors = [{ name = "Travis L. Seymour, PhD", email = "nogard@ucsc.edu" }]
 readme = "README.md"
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: Markdown",
 ]
 dependencies = [
-    "typer>=0.9",
+    "cyclopts>=5.0",
     "markdown>=3.5",
     "pdfkit>=1.0",
     "pygments>=2.17",

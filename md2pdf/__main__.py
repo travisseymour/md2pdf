@@ -24,14 +24,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 import html
 from pathlib import Path
-from typing import Optional
+from typing import Annotated
 
 import markdown
 import pdfkit
-import typer
+from cyclopts import App, Parameter, validators
 from pygments.formatters import HtmlFormatter
 
-app = typer.Typer(help="Markdown to PDF Converter")
+app = App(help="Markdown to PDF Converter")
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -84,19 +84,17 @@ WATERMARK_CSS = """
 """
 
 
-@app.command()
+@app.default
 def convert(
-    input_file: Path = typer.Argument(..., exists=True, help="Path to the Markdown file"),
-    output_pdf: Optional[Path] = typer.Argument(None, help="Path to the output PDF file (default: <input>.pdf)"),
-    save_html: bool = typer.Option(False, "--save-html", help="Save intermediate HTML file"),
-    theme: str = typer.Option(
-        "monokai",
-        help="Pygments theme for syntax highlighting. Options are "
-        "['default', 'monokai', 'manni', 'vim', 'friendly', 'native', 'github']",
-    ),
-    margin: Optional[float] = typer.Option(None, "--margin", help="Page margins in inches (e.g. 0.75)"),
-    font_scale: Optional[int] = typer.Option(None, "--font-scale", help="Font size as a percentage of the default (e.g. 120 for 20%% larger)"),
-    watermark: Optional[str] = typer.Option(None, "--watermark", help="Add diagonal watermark text to each page (e.g. 'DRAFT' or 'CONFIDENTIAL')"),
+    input_file: Annotated[Path, Parameter(validator=validators.Path(exists=True), help="Path to the Markdown file")],
+    output_pdf: Annotated[Path | None, Parameter(help="Path to the output PDF file (default: <input>.pdf)")] = None,
+    *,
+    save_html: Annotated[bool, Parameter(help="Save intermediate HTML file")] = False,
+    theme: Annotated[str, Parameter(help="Pygments theme for syntax highlighting. Options are "
+        "['default', 'monokai', 'manni', 'vim', 'friendly', 'native', 'github']")] = "monokai",
+    margin: Annotated[float | None, Parameter(help="Page margins in inches (e.g. 0.75)")] = None,
+    font_scale: Annotated[int | None, Parameter(help="Font size as a percentage of the default (e.g. 120 for 20% larger)")] = None,
+    watermark: Annotated[str | None, Parameter(help="Add diagonal watermark text to each page (e.g. 'DRAFT' or 'CONFIDENTIAL')")] = None,
 ):
     """
     Convert a Markdown file to a PDF with syntax-highlighted code blocks.
@@ -128,7 +126,7 @@ def convert(
         html_file = input_file.with_suffix(".html")
         with open(html_file, "w", encoding="utf-8") as html_out:
             html_out.write(html_doc)
-        typer.echo(f"Intermediate HTML saved to: {html_file}")
+        print(f"Intermediate HTML saved to: {html_file}")
 
     # Convert HTML to PDF
     options = {}
@@ -139,7 +137,7 @@ def convert(
         options["margin-left"] = margin_str
         options["margin-right"] = margin_str
     pdfkit.from_string(html_doc, str(output_pdf), options=options or None)
-    typer.echo(f"PDF generated: {output_pdf}")
+    print(f"PDF generated: {output_pdf}")
 
 
 if __name__ == "__main__":
