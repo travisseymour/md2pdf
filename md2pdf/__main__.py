@@ -22,6 +22,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 """
 
+import html
 from pathlib import Path
 from typing import Optional
 
@@ -66,6 +67,22 @@ tr:nth-child(even) {
 }
 """
 
+WATERMARK_CSS = """
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 100px;
+    color: rgba(200, 200, 200, 0.3);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+    letter-spacing: 0.05em;
+}
+"""
+
 
 @app.command()
 def convert(
@@ -79,6 +96,7 @@ def convert(
     ),
     margin: Optional[float] = typer.Option(None, "--margin", help="Page margins in inches (e.g. 0.75)"),
     font_scale: Optional[int] = typer.Option(None, "--font-scale", help="Font size as a percentage of the default (e.g. 120 for 20%% larger)"),
+    watermark: Optional[str] = typer.Option(None, "--watermark", help="Add diagonal watermark text to each page (e.g. 'DRAFT' or 'CONFIDENTIAL')"),
 ):
     """
     Convert a Markdown file to a PDF with syntax-highlighted code blocks.
@@ -96,10 +114,14 @@ def convert(
     # Build CSS: syntax highlighting theme + table styling
     highlight_css = HtmlFormatter(style=theme).get_style_defs(".codehilite")
     font_css = f"body {{ font-size: {font_scale}%; }}\n" if font_scale is not None else ""
-    css = f"{highlight_css}\n{TABLE_CSS}\n{font_css}"
+    watermark_css = WATERMARK_CSS if watermark else ""
+    css = f"{highlight_css}\n{TABLE_CSS}\n{font_css}\n{watermark_css}"
+
+    # Build watermark HTML overlay
+    watermark_html = f'<div class="watermark">{html.escape(watermark)}</div>' if watermark else ""
 
     # Wrap in a proper HTML document with UTF-8 charset
-    html_doc = HTML_TEMPLATE.format(css=css, body=html_content)
+    html_doc = HTML_TEMPLATE.format(css=css, body=html_content + watermark_html)
 
     # Save HTML to a file if requested
     if save_html:

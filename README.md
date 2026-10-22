@@ -57,6 +57,7 @@ md2pdf my_document.md custom_name.pdf
 | `--theme TEXT` | Pygments syntax highlighting theme (default: `monokai`). Options: `default`, `monokai`, `manni`, `vim`, `friendly`, `native`, `github` |
 | `--margin FLOAT` | Page margins in inches (e.g. `0.75`). When omitted, the default margins are used |
 | `--font-scale INT` | Font size as a percentage of the default (e.g. `120` for 20% larger) |
+| `--watermark TEXT` | Add diagonal watermark text to each page (e.g. `DRAFT` or `Copyright 2026`) |
 
 ### Examples
 
@@ -76,6 +77,12 @@ Use a different syntax highlighting theme:
 
 ```bash
 md2pdf notes.md --theme github
+```
+
+Add a watermark to each page:
+
+```bash
+md2pdf notes.md --watermark "Copyright 2026 - Travis L. Seymour"
 ```
 
 ---
