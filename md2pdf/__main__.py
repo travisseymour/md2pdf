@@ -129,14 +129,14 @@ def convert(
         print(f"Intermediate HTML saved to: {html_file}")
 
     # Convert HTML to PDF
-    options = {}
+    options = {"enable-local-file-access": ""}
     if margin is not None:
         margin_str = f"{margin}in"
         options["margin-top"] = margin_str
         options["margin-bottom"] = margin_str
         options["margin-left"] = margin_str
         options["margin-right"] = margin_str
-    pdfkit.from_string(html_doc, str(output_pdf), options=options or None)
+    pdfkit.from_string(html_doc, str(output_pdf), options=options)
     print(f"PDF generated: {output_pdf}")
 
 
